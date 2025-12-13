@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Thermometer, Droplets, Flame, Wind } from 'lucide-react';
+import { toast } from 'sonner';
 import { api } from '../services/api';
 import type { SensorData, Thresholds, Media, SystemStatus } from '../services/api';
 import { SensorCard } from './SensorCard';
@@ -47,9 +48,10 @@ export const Dashboard: React.FC = () => {
     try {
       const updated = await api.updateThreshold(newThresholds);
       setThresholds(updated);
+      toast.success('Thresholds updated successfully');
     } catch (error) {
       console.error('Failed to update thresholds:', error);
-      // Optimistic update or error handling could go here
+      toast.error('Failed to update thresholds');
     }
   };
 

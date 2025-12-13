@@ -1,8 +1,12 @@
+import { Toaster } from 'sonner'
 import { Dashboard } from './components/Dashboard'
 
 function App() {
   return (
-    <Dashboard />
+    <>
+      <Toaster />
+      <Dashboard />
+    </>
   )
 }
 
