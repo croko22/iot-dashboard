@@ -77,30 +77,30 @@ export const Dashboard: React.FC = () => {
             <>
               <SensorCard
                 title="Temperature"
-                value={sensors.temperature}
+                value={sensors.temperature ?? '---'}
                 unit="°C"
                 icon={Thermometer}
                 threshold={thresholds?.temperature_max}
               />
               <SensorCard
                 title="Humidity"
-                value={sensors.humidity}
+                value={sensors.humidity ?? '---'}
                 unit="%"
                 icon={Droplets}
               />
               <SensorCard
                 title="Gas Level"
-                value={sensors.gas_level}
+                value={sensors.gas_level ?? '---'}
                 unit="ppm"
                 icon={Wind}
                 threshold={thresholds?.gas_max}
               />
               <SensorCard
                 title="Fire Status"
-                value={sensors.fire_detected ? 'DETECTED' : 'Safe'}
+                value={sensors.fire_detected === null ? '---' : (sensors.fire_detected ? 'DETECTED' : 'Safe')}
                 unit=""
                 icon={Flame}
-                isAlert={sensors.fire_detected}
+                isAlert={sensors.fire_detected === true}
               />
             </>
           )}

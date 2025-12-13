@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 export interface SensorData {
-  temperature: number;
-  humidity: number;
-  gas_level: number;
-  fire_detected: boolean;
+  temperature: number | null;
+  humidity: number | null;
+  gas_level: number | null;
+  fire_detected: boolean | null;
   timestamp: string;
 }
 
@@ -40,12 +40,11 @@ export const api = {
       return response.data;
     } catch (error) {
       console.error('Error fetching sensors:', error);
-      // Return mock data for development if backend is not reachable
       return {
-        temperature: 24 + Math.random() * 5,
-        humidity: 40 + Math.random() * 10,
-        gas_level: 100 + Math.random() * 50,
-        fire_detected: Math.random() > 0.95,
+        temperature: null,
+        humidity: null,
+        gas_level: null,
+        fire_detected: null,
         timestamp: new Date().toISOString(),
       };
     }
