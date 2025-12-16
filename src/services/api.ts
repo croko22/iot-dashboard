@@ -4,6 +4,7 @@ export interface SensorData {
   temperature: number | null;
   humidity: number | null;
   gas_level: number | null;
+  smoke_level?: number | null; // Added to match backend
   fire_detected: boolean | null;
   timestamp: string;
 }
@@ -36,14 +37,24 @@ const apiClient = axios.create({
 export const api = {
   async fetchSensors(): Promise<SensorData> {
     try {
-      const response = await apiClient.get<SensorData>('/sensors');
-      return response.data;
+      const response = await apiClient.get<any>('/sensors');
+      const data = response.data;
+      return {
+        temperature: data.temperature,
+        humidity: data.humidity,
+        // Map smoke_level to gas_level if gas_level is missing
+        gas_level: data.gas_level ?? data.smoke_level ?? null,
+        smoke_level: data.smoke_level ?? null,
+        fire_detected: data.fire_detected,
+        timestamp: data.timestamp,
+      };
     } catch (error) {
       console.error('Error fetching sensors:', error);
       return {
         temperature: null,
         humidity: null,
         gas_level: null,
+        smoke_level: null,
         fire_detected: null,
         timestamp: new Date().toISOString(),
       };

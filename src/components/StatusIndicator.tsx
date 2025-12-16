@@ -11,25 +11,29 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
     switch (statusStr) {
       case 'Normal':
         return {
-          color: 'bg-green-100 text-green-800 border-green-200',
+          wrapper: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+          iconBg: 'bg-emerald-500/20',
           icon: CheckCircle,
           label: 'Normal',
         };
       case 'Riesgo':
         return {
-          color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+          wrapper: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+          iconBg: 'bg-amber-500/20',
           icon: AlertTriangle,
           label: 'Riesgo',
         };
       case 'Confirmado':
         return {
-          color: 'bg-red-100 text-red-800 border-red-200',
+          wrapper: 'bg-red-500/10 border-red-500/20 text-red-400 animate-pulse-slow',
+          iconBg: 'bg-red-500/20',
           icon: ShieldAlert,
           label: 'Confirmado',
         };
       default:
         return {
-          color: 'bg-gray-100 text-gray-800 border-gray-200',
+          wrapper: 'bg-white/5 border-white/10 text-muted-foreground',
+          iconBg: 'bg-white/10',
           icon: AlertTriangle,
           label: 'Unknown',
         };
@@ -40,13 +44,15 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
   const Icon = config.icon;
 
   return (
-    <div className={`flex items-center gap-4 p-4 rounded-xl border shadow-sm ${config.color}`}>
-      <div className={`p-3 rounded-full bg-white/50`}>
-        <Icon className="w-8 h-8" />
+    <div className={`flex items-center gap-4 px-5 py-3 rounded-full border backdrop-blur-md ${config.wrapper}`}>
+      <div className={`p-2 rounded-full ${config.iconBg}`}>
+        <Icon className="w-5 h-5" />
       </div>
-      <div>
-        <h2 className="text-lg font-bold uppercase tracking-wide">{config.label}</h2>
-        <p className="text-sm opacity-90">{status.message}</p>
+      <div className="flex flex-col md:flex-row md:items-baseline md:gap-3">
+        <h2 className="text-sm font-bold uppercase tracking-widest">{config.label}</h2>
+        {status.message && (
+          <p className="text-xs opacity-80 hidden md:block border-l border-white/20 pl-3">{status.message}</p>
+        )}
       </div>
     </div>
   );

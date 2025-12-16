@@ -30,11 +30,13 @@ export const ThresholdControl: React.FC<ThresholdControlProps> = ({ thresholds, 
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
+    <div className="glass p-6 rounded-2xl relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+      
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Settings className="w-5 h-5 text-gray-500" />
-          <h3 className="font-semibold text-gray-800">Threshold Settings</h3>
+          <Settings className="w-5 h-5 text-accent" />
+          <h3 className="font-semibold text-foreground tracking-tight">Threshold Settings</h3>
         </div>
         {!isEditing ? (
           <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
@@ -54,7 +56,7 @@ export const ThresholdControl: React.FC<ThresholdControlProps> = ({ thresholds, 
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
             Max Temperature (°C)
           </label>
           <input
@@ -63,11 +65,14 @@ export const ThresholdControl: React.FC<ThresholdControlProps> = ({ thresholds, 
             value={localThresholds.temperature_max}
             onChange={handleChange}
             disabled={!isEditing}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
+            className="w-full px-3 py-2 bg-[#0F0F12] border border-white/10 rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent 
+                       text-foreground placeholder:text-muted-foreground/50 transition-all
+                       disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-mono uppercase tracking-widest text-muted-foreground mb-2">
             Max Gas Level
           </label>
           <input
@@ -76,7 +81,10 @@ export const ThresholdControl: React.FC<ThresholdControlProps> = ({ thresholds, 
             value={localThresholds.gas_max}
             onChange={handleChange}
             disabled={!isEditing}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
+            className="w-full px-3 py-2 bg-[#0F0F12] border border-white/10 rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent 
+                       text-foreground placeholder:text-muted-foreground/50 transition-all
+                       disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
       </div>

@@ -7,6 +7,7 @@ import { SensorCard } from './SensorCard';
 import { ThresholdControl } from './ThresholdControl';
 import { MediaViewer } from './MediaViewer';
 import { StatusIndicator } from './StatusIndicator';
+import { PageBackground } from './PageBackground';
 
 export const Dashboard: React.FC = () => {
   const [sensors, setSensors] = useState<SensorData | null>(null);
@@ -32,15 +33,13 @@ export const Dashboard: React.FC = () => {
     }
   };
 
-  // Initial fetch for thresholds (usually static or user-controlled)
   useEffect(() => {
     api.fetchThresholds().then(setThresholds).catch(console.error);
   }, []);
 
-  // Polling for real-time data
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 3000); // Poll every 3 seconds
+    const interval = setInterval(fetchData, 3000); 
     return () => clearInterval(interval);
   }, []);
 
@@ -55,23 +54,64 @@ export const Dashboard: React.FC = () => {
     }
   };
 
+  const isFireDetected = React.useMemo(() => {
+    if (!sensors) return false;
+    
+    if (sensors.fire_detected) return true;
+
+    const tempExceeded = 
+      sensors.temperature !== null && 
+      thresholds?.temperature_max !== undefined && 
+      sensors.temperature > thresholds.temperature_max;
+      
+    const gasExceeded = 
+      sensors.gas_level !== null && 
+      thresholds?.gas_max !== undefined && 
+      sensors.gas_level > thresholds.gas_max;
+
+    return tempExceeded || gasExceeded;
+  }, [sensors, thresholds]);
+
+  // Compute effective system status
+  // If we detect fire client-side, we override the backend status to 'Confirmado'
+  const effectiveStatus: SystemStatus | null = React.useMemo(() => {
+    if (isFireDetected) {
+      return {
+        status: 'Confirmado',
+        message: 'CRITICAL ALERT: Hazardous Conditions Detected',
+      };
+    }
+    return status;
+  }, [isFireDetected, status]);
+
   if (loading && !sensors) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="flex items-center justify-center min-h-screen bg-background text-foreground relative overflow-hidden">
+        <PageBackground />
+        <div className="relative z-10 flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+          <p className="text-muted-foreground animate-pulse">Initializing System...</p>
+        </div>
       </div>
     );
   }
 
+  if (!sensors && !loading) {
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="min-h-screen relative overflow-hidden text-foreground selection:bg-accent/30 selection:text-white">
+      <PageBackground />
+      
+      <div className="relative z-10 max-w-7xl mx-auto p-6 md:p-12 space-y-12">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-border/40 pb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">IoT Monitor</h1>
-            <p className="text-gray-500 mt-1">Real-time sensor dashboard & fire detection system</p>
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white mb-2">
+              <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">IoT Monitor</span>
+            </h1>
+            <p className="text-muted-foreground text-lg">Real-time sensor dashboard & fire detection system</p>
           </div>
-          {status && <StatusIndicator status={status} />}
+          {effectiveStatus && <StatusIndicator status={effectiveStatus} />}
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -99,10 +139,10 @@ export const Dashboard: React.FC = () => {
               />
               <SensorCard
                 title="Fire Status"
-                value={sensors.fire_detected === null ? '---' : (sensors.fire_detected ? 'DETECTED' : 'Safe')}
+                value={isFireDetected ? 'DETECTED' : 'Safe'}
                 unit=""
                 icon={Flame}
-                isAlert={sensors.fire_detected === true}
+                isAlert={isFireDetected}
               />
             </>
           )}
