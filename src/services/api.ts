@@ -25,7 +25,7 @@ export interface SystemStatus {
   message: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -86,8 +86,26 @@ export const api = {
 
   async fetchLatestMedia(): Promise<Media> {
     try {
-      const response = await apiClient.get<Media>('/media/latest');
-      return response.data;
+      const response = await apiClient.get<any>('/media/latest');
+      const data = response.data;
+      
+      console.log(data);
+
+      let photo_url = data.latest_photo || data.photo_url || data.annotated_image_url || null;
+      if (photo_url && photo_url.startsWith('/')) {
+        photo_url = `${API_BASE_URL}${photo_url}`;
+      }
+
+      let audio_url = data.latest_audio || data.audio_url || null;
+      if (audio_url && audio_url.startsWith('/')) {
+        audio_url = `${API_BASE_URL}${audio_url}`;
+      }
+
+      return {
+        photo_url: photo_url || 'https://placehold.co/600x400?text=No+Image',
+        audio_url: audio_url || '',
+        timestamp: data.timestamp || new Date().toISOString(),
+      };
     } catch (error) {
       console.error('Error fetching media:', error);
       return {
